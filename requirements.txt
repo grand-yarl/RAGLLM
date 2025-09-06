@@ -1,0 +1,7 @@
+qdrant-client
+sentence-transformers
+ollama
+pypdf
+python-docx
+PyPDF2
+Pillow
