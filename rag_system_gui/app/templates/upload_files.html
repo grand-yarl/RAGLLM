@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка файлов</title>
+    <link rel="stylesheet" href="./static/styles/upload_files.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Загрузка файлов</h1>
+
+        <!-- Сообщения flash -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Форма загрузки -->
+        <form action="/upload" class="dropzone" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-section" id="dropZone">
+                <input type="file" id="fileInput" name="files" class="file-input" multiple>
+                <button type="button" onclick="document.getElementById('fileInput').click()" class="upload-btn">
+                    Выбрать файлы
+                </button>
+                <p>или перетащите файлы сюда</p>
+            </div>
+
+            <!-- Информация о выбранных файлах -->
+            <div class="file-info">
+                <h3>Информация о выбранных файлах</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        Количество файлов: <span id="fileCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        Общий размер: <span id="totalSize">0 Б</span>
+                    </div>
+                    <div class="info-item">
+                        Типы файлов: <span id="fileTypes">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit" class="upload-btn" style="width: 100%; margin-top: 20px;">
+                Загрузить файлы
+            </button>
+        </form>
+
+        <!-- Загруженные файлы -->
+        <div class="uploaded-files">
+            <h3>Загруженные файлы</h3>
+            <ul class="files-list" id="uploadedFilesList">
+                {% for file in uploaded_files %}
+                <li class="file-item">
+                    <div class="file-details">
+                        <div class="file-name">{{ file.name }}</div>
+                        <div class="file-size">{{ (file.size / 1024 / 1024)|round(2) }} MB</div>
+                        <div class="file-date">Загружено: {{ file.upload_date }}</div>
+                    </div>
+                    <div class="file-actions">
+                        <a href="{{ url_for('download_file', filename=file.name) }}" class="action-btn download-btn">Скачать</a>
+                        <a href="{{ url_for('delete_file', filename=file.name) }}" class="action-btn delete-btn" onclick="return confirm('Удалить файл?')">Удалить</a>
+                    </div>
+                </li>
+                {% else %}
+                <li class="file-item">
+                    <div class="file-details">
+                        <div class="file-name">Нет загруженных файлов</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script src="./static/js/upload_files.js"></script>
+</body>
+</html>

@@ -5,3 +5,4 @@ pypdf
 python-docx
 PyPDF2
 Pillow
+flask
