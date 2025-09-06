@@ -4,7 +4,7 @@ from pathlib import Path
 # Базовые пути
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
-DOCUMENTS_DIR = DATA_DIR / "documents"
+DOCUMENTS_DIR = Path("./data/documents")
 
 # Создаем необходимые директории
 os.makedirs(DOCUMENTS_DIR, exist_ok=True)

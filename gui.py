@@ -1,15 +1,13 @@
+import sys
+import shutil
+import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
-import threading
-from pathlib import Path
-import sys
-import os
-from PIL import Image, ImageTk
-import requests
-from io import BytesIO
 
-# Добавляем путь к src для импорта
-sys.path.append(str(Path(__file__).parent))
+from rag_system_gui.config import *
+from rag_system_gui import rag_query, search_documents, add_documents
+from rag_system_gui.src.llm.ollama_client import check_ollama_status
+from rag_system_gui.src import QdrantManager
 
 
 class ModernRAGGUI:
@@ -42,7 +40,6 @@ class ModernRAGGUI:
     def load_available_models(self):
         """Загружает список доступных моделей Ollama"""
         try:
-            from src.llm.ollama_client import check_ollama_status
             ollama_ok, ollama_msg, model_names = check_ollama_status()
             
             if ollama_ok and model_names:
@@ -171,8 +168,6 @@ class ModernRAGGUI:
     def _run_query_thread(self, query):
         """Поток выполнения запроса с учетом выбранных параметров"""
         try:
-            from scripts.query import rag_query, search_documents
-            
             # Получаем текущие настройки
             model_name = self.current_model
             chunk_limit = self.chunk_limit
@@ -412,8 +407,6 @@ class ModernRAGGUI:
     def update_documents_info(self):
         """Обновление информации о документах"""
         try:
-            from config import DOCUMENTS_DIR
-            
             if DOCUMENTS_DIR.exists():
                 documents = list(DOCUMENTS_DIR.glob("*"))
                 doc_count = len(documents)
@@ -435,9 +428,6 @@ class ModernRAGGUI:
         folder_path = filedialog.askdirectory(title="Select Documents Folder")
         if folder_path:
             try:
-                from config import DOCUMENTS_DIR
-                import shutil
-                
                 # Копируем документы в папку проекта
                 for item in Path(folder_path).iterdir():
                     if item.is_file() and item.suffix.lower() in ['.pdf', '.docx', '.txt']:
@@ -461,9 +451,6 @@ class ModernRAGGUI:
     def _process_documents_thread(self):
         """Поток обработки документов"""
         try:
-            from scripts.add_documents import add_documents
-            from config import DOCUMENTS_DIR
-            
             self.log_message("Loading modules...")
             self.log_message("Processing documents...")
             
@@ -481,7 +468,6 @@ class ModernRAGGUI:
     def open_documents_folder(self):
         """Открытие папки с документами"""
         try:
-            from config import DOCUMENTS_DIR, open_folder_in_explorer
             open_folder_in_explorer(DOCUMENTS_DIR)
         except Exception as e:
             self.log_message(f"Error opening folder: {e}")
@@ -579,7 +565,6 @@ class ModernRAGGUI:
         
         # Проверка Qdrant
         try:
-            from src.database.qdrant_client import QdrantManager
             db_manager = QdrantManager()
             connected, message = db_manager.check_connection()
             
@@ -593,7 +578,6 @@ class ModernRAGGUI:
 
         # Проверка Ollama через функцию check_ollama_status
         try:
-            from src.llm.ollama_client import check_ollama_status
             ollama_ok, ollama_msg, model_names = check_ollama_status()
             
             if ollama_ok:
@@ -636,6 +620,7 @@ class ModernRAGGUI:
             self.status_var.set(message)
         
         self.root.after(0, update_log)
+
 
 if __name__ == "__main__":
     # Проверяем, активировано ли виртуальное окружение
